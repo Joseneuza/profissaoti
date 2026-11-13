@@ -171,7 +171,7 @@
   <header>
     <span class="kicker">🚀 Feira de Profissões</span>
     <h1>Trilha da TI</h1>
-    <p class="sub">A Tecnologia da Informação tem muito mais do que “programador”. Conheça as pessoas por trás dos sistemas — e as histórias reais de quando tudo deu (muito) errado.</p>
+    <p class="sub">A Tecnologia da Informação tem muito mais do que “programador”. Conheça as pessoas por trás dos sistemas — e as curiosidades de cada área.</p>
   </header>
 
   <section class="hud" aria-live="polite">
@@ -191,7 +191,7 @@
   </section>
 
   <main>
-    <p class="hint">👆 <b>Toque em cada personagem</b> para descobrir o que ele faz e o que já aconteceu na área dele.</p>
+    <p class="hint">👆 <b>Toque em cada personagem</b> para descobrir o que ele faz e as curiosidades da área dele.</p>
     <div class="stage" id="stage"></div>
 
     <section class="closing" id="vinte-e-quatro-horas" aria-labelledby="closingTitle">
@@ -218,7 +218,7 @@
     </section>
   </main>
 
-  <footer>Feito para a Feira de Profissões • As histórias são casos reais e famosos da história da computação.</footer>
+  <footer>Feito para a Feira de Profissões • Curiosidades e fatos da história da computação e da tecnologia.</footer>
 
   <!-- Modal -->
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
@@ -230,7 +230,7 @@
       </div>
       <div class="tabs" role="tablist">
         <button class="tab" role="tab" aria-selected="true" data-tab="sobre">🧠 O que faz</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="news">📰 Aconteceu de verdade</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="news">📰 Curiosidades</button>
       </div>
       <div class="panel show" id="p-sobre"></div>
       <div class="panel" id="p-news"></div>
@@ -246,7 +246,7 @@
     <div class="win-box">
       <div class="medal">🏆</div>
       <h2>Trilha completa!</h2>
-      <p>Você conheceu as 12 profissões da TI. Percebeu? Toda grande falha envolveu várias áreas — tecnologia é trabalho em equipe. Qual delas combina mais com você?</p>
+      <p>Você conheceu as 12 profissões da TI. Percebeu? Cada área tem curiosidades incríveis, e a tecnologia só funciona com todas trabalhando juntas — tecnologia é trabalho em equipe. Qual delas combina mais com você?</p>
       <button class="btn" id="winClose">Voltar aos personagens</button>
     </div>
   </div>
@@ -322,7 +322,7 @@ const PROFS = [
   dia:'Monitorar alertas, investigar incidentes, testar defesas, orientar colegas e garantir que sistemas estejam atualizados.',
   noticias:[
     {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Segurança da Informação atua como um verdadeiro guardião do mundo digital! Ele trabalha para proteger dados, sistemas e redes contra ataques de hackers, fraudes e vazamentos de informações. Uma curiosidade é que muitos profissionais dessa área realizam testes simulando ataques cibernéticos, conhecidos como testes de invasão (Pentest), para descobrir vulnerabilidades antes que criminosos possam explorá-las.</p><p>Os ataques cibernéticos estão se tornando cada vez mais sofisticados e podem atingir desde computadores pessoais até grandes empresas, bancos, hospitais e órgãos governamentais em qualquer parte do mundo!</p>", licao:""},
-    {ano:"2026", titulo:"", texto:"<p>Um fato impressionante aconteceu em novembro de 2026: a França acusou um grupo ligado ao Irã de realizar um ataque cibernético que alterou remotamente a temperatura de refrigeradores de aproximadamente 700 supermercados franceses, causando perdas de alimentos e prejuízos milionários.</p><p>Outro caso recente envolveu a empresa de transporte marítimo Maersk, que, em novembro de 2026, informou estar investigando um acesso não autorizado a um de seus sistemas, com extração de dados.</p><p><small style=\"color:var(--muted)\">Reuters</small></p><p>Esses acontecimentos mostram que a Segurança da Informação vai muito além de proteger senhas: o profissional dessa área precisa antecipar ameaças, identificar vulnerabilidades, proteger dados e impedir que ataques digitais provoquem prejuízos financeiros e até impactos na vida das pessoas.</p>", licao:"<b>A grande reflexão:</b> no mundo conectado, um ataque cibernético pode começar com um simples clique e terminar afetando milhares de pessoas. Por isso, profissionais de Segurança da Informação são cada vez mais essenciais!"}
+    {ano:"2026", titulo:"", texto:"<p>Um fato impressionante aconteceu em novembro de 2026: a França acusou um grupo ligado ao Irã de realizar um ataque cibernético que alterou remotamente a temperatura de refrigeradores de aproximadamente 700 supermercados franceses, causando perdas de alimentos e prejuízos milionários.</p><p>Outro caso recente envolveu a empresa de transporte marítimo Maersk, que, em novembro de 2026, informou estar investigando um acesso não autorizado a um de seus sistemas, com extração de dados.</p><p>Esses acontecimentos mostram que a Segurança da Informação vai muito além de proteger senhas: o profissional dessa área precisa antecipar ameaças, identificar vulnerabilidades, proteger dados e impedir que ataques digitais provoquem prejuízos financeiros e até impactos na vida das pessoas.</p>", licao:"<b>A grande reflexão:</b> no mundo conectado, um ataque cibernético pode começar com um simples clique e terminar afetando milhares de pessoas. Por isso, profissionais de Segurança da Informação são cada vez mais essenciais!"}
   ]
 },
 {
