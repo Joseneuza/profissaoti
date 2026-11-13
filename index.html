@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trilha da TI — Feira de Profissões</title>
+<meta name="description" content="Conheça as profissões da Tecnologia da Informação: clique em cada personagem e descubra fatos e histórias reais da área.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0b1026; --bg2:#1a1145; --card:#ffffff10; --line:#ffffff22;
+    --txt:#f4f6ff; --muted:#b9c0e6; --accent:#ffd54f;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;color:var(--txt);
+    background:radial-gradient(1200px 800px at 10% -10%,#3b1f8f 0%,transparent 60%),
+               radial-gradient(1000px 700px at 110% 10%,#0e6b8a 0%,transparent 55%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;overflow-x:hidden;
+  }
+  h1,h2,h3,.fred{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif}
+
+  /* ---------- fundo animado ---------- */
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:-2;animation:drift 18s ease-in-out infinite alternate}
+  .blob.b1{width:380px;height:380px;background:#ff3d7f;top:55%;left:-120px}
+  .blob.b2{width:420px;height:420px;background:#00e5ff;top:-120px;right:20%;animation-delay:-6s}
+  .blob.b3{width:320px;height:320px;background:#ffd54f;bottom:-140px;right:-80px;animation-delay:-11s}
+  @keyframes drift{to{transform:translate(80px,-60px) scale(1.15)}}
+  #glyphs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+  .glyph{position:absolute;bottom:-60px;font-family:'Fredoka',monospace,sans-serif;font-weight:700;opacity:.18;animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-120vh) rotate(25deg)}}
+
+  /* ---------- cabeçalho ---------- */
+  header{text-align:center;padding:34px 18px 8px}
+  .kicker{display:inline-block;background:#ffffff18;border:1px solid var(--line);padding:6px 14px;border-radius:999px;font-weight:800;letter-spacing:.06em;font-size:.8rem;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(2rem,5.5vw,3.8rem);line-height:1.05;margin:12px 0 8px;
+     background:linear-gradient(90deg,#ffd54f,#ff6fb5,#7cf7ff,#b388ff,#ffd54f);background-size:300% 100%;
+     -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 8s linear infinite}
+  @keyframes shine{to{background-position:300% 0}}
+  .sub{color:var(--muted);font-size:clamp(1rem,2.2vw,1.2rem);max-width:720px;margin:0 auto}
+
+  /* ---------- HUD da trilha ---------- */
+  .hud{position:sticky;top:10px;z-index:20;max-width:1100px;margin:18px auto 6px;padding:12px 16px;
+       display:flex;align-items:center;gap:16px;background:#0d1236cc;backdrop-filter:blur(10px);
+       border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 10px 30px #0006}
+  .ring{position:relative;width:74px;height:74px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-family:'Fredoka','Trebuchet MS',sans-serif;font-weight:700;font-size:1.15rem}
+  .ring circle{transition:stroke-dashoffset .9s cubic-bezier(.2,.9,.3,1.2)}
+  .hud-info{flex:1;min-width:0}
+  .hud-title{font-family:'Fredoka','Trebuchet MS',sans-serif;font-weight:600;font-size:1.05rem;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+  .hud-title small{color:var(--muted);font-family:'Nunito';font-weight:600}
+  .track{display:flex;gap:5px;margin-top:8px}
+  .step{flex:1;height:26px;border-radius:8px;background:#ffffff14;border:1px solid #ffffff1a;display:grid;place-items:center;font-size:.85rem;
+        transition:transform .4s, background .4s;filter:grayscale(1);opacity:.55}
+  .step.on{filter:none;opacity:1;transform:translateY(-2px)}
+  .btn{font:inherit;font-weight:800;border:0;cursor:pointer;border-radius:999px;padding:10px 16px;color:#1b1b3a;background:var(--accent);transition:transform .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.ghost{background:#ffffff14;color:var(--txt);border:1px solid var(--line)}
+
+  /* ---------- palco de personagens ---------- */
+  main{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+  .stage{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:18px}
+  .char{position:relative;border:0;cursor:pointer;color:var(--txt);text-align:center;font:inherit;
+        background:linear-gradient(180deg,#ffffff12,#ffffff06);border:1px solid var(--line);border-radius:var(--radius);
+        padding:14px 10px 16px;transition:transform .25s, box-shadow .25s, border-color .25s;
+        opacity:0;animation:popIn .6s cubic-bezier(.2,.9,.3,1.4) forwards}
+  @keyframes popIn{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:none}}
+  .char:hover,.char:focus-visible{transform:translateY(-6px) rotate(-1deg);box-shadow:0 16px 34px -10px var(--c);border-color:var(--c);outline:none}
+  .char .plat{position:absolute;left:18%;right:18%;bottom:62px;height:16px;border-radius:50%;background:var(--c);opacity:.35;filter:blur(6px)}
+  .char svg.av{width:100%;max-width:150px;height:auto;display:block;margin:0 auto;animation:bob 3.2s ease-in-out infinite;animation-delay:var(--d);transform-origin:50% 100%}
+  .char:hover svg.av{animation:wave .6s ease-in-out 2}
+  @keyframes bob{50%{transform:translateY(-7px)}}
+  @keyframes wave{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+  .char .name{font-family:'Fredoka','Trebuchet MS',sans-serif;font-weight:600;font-size:1.02rem;margin-top:8px;line-height:1.15}
+  .char .tag{display:inline-block;margin-top:6px;font-size:.75rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--c);color:#111}
+  .char .done{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:#00e676;color:#06371b;
+              display:grid;place-items:center;font-weight:900;transform:scale(0);transition:transform .4s cubic-bezier(.2,.9,.3,1.6)}
+  .char.visited .done{transform:scale(1)}
+  .char.visited{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 22%,transparent),#ffffff06)}
+  .eyes{animation:blink 5s infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+
+  .hint{text-align:center;color:var(--muted);margin:6px 0 16px;font-weight:600}
+  .hint b{color:var(--accent)}
+
+  /* ---------- modal ---------- */
+  .overlay{position:fixed;inset:0;z-index:50;background:#05071acc;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
+  .overlay.open{display:flex;animation:fade .25s}
+  @keyframes fade{from{opacity:0}}
+  .modal{position:relative;width:min(980px,100%);max-height:92vh;overflow:auto;border-radius:28px;background:#121842;border:2px solid var(--c);
+         box-shadow:0 30px 80px -20px var(--c);animation:zoom .45s cubic-bezier(.2,.9,.3,1.3)}
+  @keyframes zoom{from{transform:scale(.85) translateY(30px);opacity:0}}
+  .m-head{display:flex;gap:18px;align-items:center;padding:22px 24px;background:linear-gradient(120deg,var(--c),color-mix(in srgb,var(--c) 40%,#121842));color:#111}
+  .m-head svg{width:120px;flex:none;filter:drop-shadow(0 8px 10px #0004);animation:bob 3s ease-in-out infinite}
+  .m-head h2{font-size:clamp(1.4rem,3.6vw,2.2rem);line-height:1.05}
+  .m-head p{font-weight:700;margin-top:6px;font-size:1.02rem;max-width:560px}
+  .close{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;font-size:1.3rem;font-weight:900;background:#0008;color:#fff}
+  .tabs{display:flex;gap:8px;padding:14px 20px 0;flex-wrap:wrap}
+  .tab{font:inherit;font-weight:800;cursor:pointer;border:1px solid var(--line);background:#ffffff0d;color:var(--txt);padding:10px 16px;border-radius:14px 14px 0 0}
+  .tab[aria-selected="true"]{background:var(--c);color:#111;border-color:var(--c)}
+  .panel{padding:20px 24px 24px;border-top:2px solid var(--c);display:none}
+  .panel.show{display:block;animation:fade .3s}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .fact{background:#ffffff0c;border:1px solid var(--line);border-radius:16px;padding:14px;line-height:1.45;opacity:0;animation:popIn .5s forwards}
+  .fact b{font-family:'Fredoka','Trebuchet MS',sans-serif;color:var(--c);display:block;font-size:1.3rem;margin-bottom:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{background:color-mix(in srgb,var(--c) 25%,transparent);border:1px solid var(--c);padding:5px 12px;border-radius:999px;font-weight:700;font-size:.9rem}
+  .sec-title{font-family:'Fredoka','Trebuchet MS',sans-serif;font-size:1.1rem;margin:18px 0 6px}
+  .day{background:#ffffff0c;border-left:5px solid var(--c);padding:12px 14px;border-radius:10px;line-height:1.5}
+  .news{display:grid;gap:14px}
+  .card{display:grid;grid-template-columns:auto 1fr;gap:14px;background:#ffffff0c;border:1px solid var(--line);border-radius:18px;padding:16px;opacity:0;animation:popIn .5s forwards}
+  .year{font-family:'Fredoka','Trebuchet MS',sans-serif;font-weight:700;background:var(--c);color:#111;border-radius:14px;padding:8px 10px;height:max-content;text-align:center;min-width:72px;font-size:1.05rem}
+  .card h3{font-size:1.15rem;margin-bottom:6px}
+  .card p{line-height:1.5;color:#dfe3ff}
+  .lesson{margin-top:10px;background:#ffd54f1f;border:1px dashed #ffd54f;border-radius:12px;padding:9px 12px;font-weight:700;color:#ffe9a6}
+  .m-foot{display:flex;justify-content:space-between;gap:10px;padding:0 24px 22px}
+
+  /* ---------- celebração ---------- */
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+  .win{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:#05071ad9;padding:16px}
+  .win.open{display:grid;animation:fade .3s}
+  .win-box{text-align:center;background:#121842;border:2px solid var(--accent);border-radius:28px;padding:30px 26px;max-width:520px;animation:zoom .5s cubic-bezier(.2,.9,.3,1.4)}
+  .medal{font-size:5rem;animation:bob 1.8s ease-in-out infinite}
+  .win-box h2{font-size:2rem;color:var(--accent);margin:8px 0}
+  .win-box p{color:var(--muted);line-height:1.5;margin-bottom:18px}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);z-index:80;background:var(--accent);color:#1b1b3a;
+         font-weight:800;padding:12px 20px;border-radius:999px;box-shadow:0 10px 30px #0007;transition:transform .45s cubic-bezier(.2,.9,.3,1.4)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:0 16px 30px}
+
+  /* ---------- seção final: 24 horas sem TI (acréscimo) ---------- */
+  .card p + p{margin-top:10px}
+  .closing{margin-top:44px;padding:28px 26px;border-radius:var(--radius);border:1px solid var(--line);
+           background:linear-gradient(180deg,#ffffff12,#ffffff06);box-shadow:0 16px 34px -14px #0008}
+  .closing h2{font-size:clamp(1.4rem,3.6vw,2.1rem);line-height:1.15;color:var(--accent);margin-bottom:8px}
+  .closing p{line-height:1.6;color:#dfe3ff;margin-top:12px}
+  .closing .ask{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-weight:600;font-size:1.2rem;color:var(--txt)}
+  .closing .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:16px 0 4px}
+  .closing .item{background:#ffffff0c;border:1px solid var(--line);border-radius:16px;padding:14px;line-height:1.5;color:#dfe3ff;margin:0}
+  .closing .item b{color:var(--accent)}
+  .closing .lesson{margin-top:18px}
+  .closing .lesson h3{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-size:1.15rem;color:var(--accent)}
+  .closing .lesson p{color:#ffe9a6;margin-top:8px}
+  .closing .final{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-weight:600;font-size:1.2rem;color:var(--txt);margin-top:18px}
+  @media (max-width:640px){ .closing{padding:20px 16px} }
+
+  @media (max-width:640px){
+    .hud{flex-wrap:wrap;top:6px;gap:10px}
+    .hud .btn{width:100%}
+    .step{font-size:.7rem;height:22px}
+    .stage{grid-template-columns:repeat(2,1fr);gap:12px}
+    .m-head{flex-direction:column;text-align:center}
+    .m-head svg{width:96px}
+    .card{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.char,.fact,.card{opacity:1}}
+</style>
+</head>
+<body>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div id="glyphs" aria-hidden="true"></div>
+
+  <header>
+    <span class="kicker">🚀 Feira de Profissões</span>
+    <h1>Trilha da TI</h1>
+    <p class="sub">A Tecnologia da Informação tem muito mais do que “programador”. Conheça as pessoas por trás dos sistemas — e as histórias reais de quando tudo deu (muito) errado.</p>
+  </header>
+
+  <section class="hud" aria-live="polite">
+    <div class="ring">
+      <svg width="74" height="74" viewBox="0 0 74 74">
+        <circle cx="37" cy="37" r="31" fill="none" stroke="#ffffff1f" stroke-width="9"/>
+        <circle id="ringBar" cx="37" cy="37" r="31" fill="none" stroke="url(#grad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="194.8"/>
+        <defs><linearGradient id="grad" x1="0" x2="1"><stop offset="0" stop-color="#ffd54f"/><stop offset="1" stop-color="#ff4fa3"/></linearGradient></defs>
+      </svg>
+      <div class="pct" id="pct">0%</div>
+    </div>
+    <div class="hud-info">
+      <div class="hud-title"><span id="hudMsg">Trilha percorrida</span><small id="hudCount">0 de 12 profissões</small></div>
+      <div class="track" id="track"></div>
+    </div>
+    <button class="btn ghost" id="reset" title="Zerar a trilha para o próximo visitante">↺ Nova trilha</button>
+  </section>
+
+  <main>
+    <p class="hint">👆 <b>Toque em cada personagem</b> para descobrir o que ele faz e o que já aconteceu na área dele.</p>
+    <div class="stage" id="stage"></div>
+
+    <section class="closing" id="vinte-e-quatro-horas" aria-labelledby="closingTitle">
+      <h2 id="closingTitle">🌎 E se todos os profissionais de TI parassem de trabalhar por apenas 24 horas?</h2>
+      <p>Imagine acordar amanhã e descobrir que todos os profissionais de Tecnologia da Informação decidiram parar de trabalhar. Desenvolvedores, analistas de sistemas, administradores de banco de dados, especialistas em segurança, profissionais de redes, cientistas de dados e tantos outros simplesmente interromperam suas atividades.</p>
+      <p class="ask">O que aconteceria com o mundo?</p>
+      <div class="items">
+        <p class="item">📱 <b>Os aplicativos começariam a apresentar problemas.</b> WhatsApp, Instagram, aplicativos de bancos, plataformas de compras e serviços de transporte poderiam ficar indisponíveis ou apresentar falhas.</p>
+        <p class="item">🏦 <b>Os bancos enfrentariam dificuldades.</b> Transações financeiras, caixas eletrônicos, pagamentos com cartões e transferências via Pix poderiam sofrer interrupções.</p>
+        <p class="item">🏥 <b>Os hospitais seriam afetados.</b> Sistemas de prontuários eletrônicos, exames, agendamentos e equipamentos conectados poderiam apresentar problemas, dificultando o atendimento aos pacientes.</p>
+        <p class="item">✈️ <b>Transportes e viagens poderiam entrar em crise.</b> Sistemas de reservas, check-in, controle de tráfego e logística sofreriam impactos.</p>
+        <p class="item">🏢 <b>As empresas perderiam produtividade.</b> Sistemas de gestão, estoques, vendas, comunicação interna e armazenamento de informações poderiam deixar de funcionar corretamente.</p>
+        <p class="item">🔐 <b>Os riscos de segurança aumentariam.</b> Sem monitoramento e resposta a incidentes, ataques cibernéticos poderiam causar ainda mais prejuízos.</p>
+        <p class="item">🌐 <b>E a internet?</b> Embora não desaparecesse imediatamente, diversos serviços poderiam apresentar instabilidade, falhas e interrupções.</p>
+      </div>
+      <p>Mas existe algo ainda mais interessante nessa reflexão:</p>
+      <p>A tecnologia está tão presente em nossas vidas que muitas vezes nem percebemos quantos profissionais trabalham nos bastidores para que tudo funcione. Quando enviamos uma mensagem, fazemos um Pix, assistimos a um filme ou acessamos uma plataforma de ensino, existe uma enorme estrutura tecnológica trabalhando para tornar essas ações possíveis.</p>
+      <div class="lesson">
+        <h3>🚀 A grande reflexão:</h3>
+        <p>A Tecnologia da Informação não é apenas uma área profissional. Ela é uma das bases que sustentam o funcionamento da sociedade moderna.</p>
+        <p>Por trás de cada aplicativo, sistema, rede, banco de dados ou solução de Inteligência Artificial existe o conhecimento, a criatividade e o trabalho de profissionais de TI.</p>
+      </div>
+      <p class="final">E agora fica a pergunta: você já imaginou como seria o mundo sem a sua futura profissão?</p>
+    </section>
+  </main>
+
+  <footer>Feito para a Feira de Profissões • As histórias são casos reais e famosos da história da computação.</footer>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal" id="modal">
+      <button class="close" id="close" aria-label="Fechar">✕</button>
+      <div class="m-head">
+        <div id="mAvatar"></div>
+        <div><h2 id="mTitle"></h2><p id="mPhrase"></p></div>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="sobre">🧠 O que faz</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="news">📰 Aconteceu de verdade</button>
+      </div>
+      <div class="panel show" id="p-sobre"></div>
+      <div class="panel" id="p-news"></div>
+      <div class="m-foot">
+        <button class="btn ghost" id="prev">← Anterior</button>
+        <button class="btn" id="next">Próxima profissão →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Celebração -->
+  <div class="win" id="win" role="dialog" aria-modal="true">
+    <div class="win-box">
+      <div class="medal">🏆</div>
+      <h2>Trilha completa!</h2>
+      <p>Você conheceu as 12 profissões da TI. Percebeu? Toda grande falha envolveu várias áreas — tecnologia é trabalho em equipe. Qual delas combina mais com você?</p>
+      <button class="btn" id="winClose">Voltar aos personagens</button>
+    </div>
+  </div>
+  <canvas id="confetti"></canvas>
+  <div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DADOS DAS PROFISSÕES
+   ========================================================= */
+const PROFS = [
+{
+  id:'dev', nome:'Desenvolvimento de Software', tag:'Dev', icone:'💻', cor:'#9b7bff',
+  frase:'Transforma ideias em código: sites, aplicativos, sistemas e APIs.',
+  look:{skin:'#8d5524', hair:'#141414', estilo:'curly', camisa:'#7c4dff', acc:['laptop']},
+  fatos:[
+    'Pode atuar no <b>Front-end</b> (o que você vê na tela), no <b>Back-end</b> (regras e dados no servidor) ou nos dois (<b>Full Stack</b>).',
+    'Passa boa parte do tempo <b>lendo código</b> — o próprio e o dos colegas — e não só escrevendo.',
+    'Usa o <b>Git</b> para versionar o código e trabalhar em equipe sem que um apague o trabalho do outro.',
+    'Aprender a programar é como aprender um idioma: a primeira linguagem é a mais difícil, as próximas ficam bem mais fáceis.'
+  ],
+  skills:['Lógica de programação','JavaScript','Python','Java / C#','Git','Resolução de problemas'],
+  dia:'Desenvolver novas funcionalidades, corrigir bugs, revisar o código dos colegas (code review) e conversar com o time sobre a melhor solução.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> Um desenvolvedor de software pode passar horas escrevendo um código que será executado em milissegundos! Mas existe uma curiosidade ainda mais interessante: estima-se que desenvolvedores passem boa parte do tempo não escrevendo códigos, mas lendo, analisando e corrigindo códigos já existentes. Afinal, programar não é apenas criar soluções, mas também investigar problemas e encontrar maneiras inteligentes de resolvê-los!</p>", licao:""},
+    {ano:"1843", titulo:"", texto:"<p>Em 1843, Ada Lovelace escreveu o que é considerado o primeiro algoritmo destinado a ser executado por uma máquina: a Máquina Analítica, idealizada por Charles Babbage. Ela percebeu que os computadores poderiam ir muito além de realizar cálculos matemáticos, podendo também manipular símbolos e produzir diferentes tipos de resultados.</p><p>O mais impressionante é que isso aconteceu muito antes da criação dos computadores modernos! Ada Lovelace é reconhecida mundialmente como a primeira programadora da história.</p>", licao:"Curiosidade para refletir: a história do desenvolvimento de software começou muito antes de existirem computadores pessoais, internet ou smartphones. Cada aplicativo que usamos hoje é resultado de uma evolução tecnológica iniciada há quase dois séculos!"}
+  ]
+},
+{
+  id:'analista', nome:'Análise de Sistemas', tag:'Analista', icone:'🧩', cor:'#ffab40',
+  frase:'A ponte entre quem precisa do sistema e quem vai construí-lo.',
+  look:{skin:'#f1c27d', hair:'#3b2416', estilo:'side', camisa:'#ff9100', acc:['glasses','postit']},
+  fatos:[
+    'Conversa com clientes e usuários para <b>entender o problema</b> antes de qualquer linha de código.',
+    'Escreve <b>requisitos</b> e histórias de usuário, e desenha fluxos e protótipos simples.',
+    'Faz a ponte entre áreas de negócio (vendas, saúde, financeiro...) e o time técnico.',
+    'Uma pergunta bem feita no começo do projeto pode economizar <b>meses de retrabalho</b>.'
+  ],
+  skills:['Comunicação','Modelagem (UML)','Lógica','Visão de negócio','SQL básico'],
+  dia:'Reuniões com clientes, documentação de requisitos, validação de protótipos e apoio ao time durante o desenvolvimento e os testes.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O analista de sistemas é como um detetive da tecnologia! Antes de desenvolver ou implementar um sistema, ele investiga os problemas de uma organização, conversa com os usuários, identifica necessidades e transforma essas necessidades em soluções tecnológicas. Seu trabalho vai muito além de entender computadores: ele precisa compreender pessoas, processos e negócios para criar sistemas que realmente façam a diferença!</p>", licao:""}
+  ]
+},
+{
+  id:'qa', nome:'Qualidade de Software (QA)', tag:'QA / Testes', icone:'🔍', cor:'#2ee66b',
+  frase:'Procura, de propósito, todas as formas de fazer o software falhar — antes do usuário.',
+  look:{skin:'#ffdbac', hair:'#e0b028', estilo:'ponytail', camisa:'#00c853', acc:['glasses','magnifier']},
+  fatos:[
+    'Garante que o software faz o que deveria — e que <b>não faz</b> o que não deveria.',
+    'Escreve testes manuais e <b>automatizados</b>, com ferramentas como Selenium, Cypress e JUnit.',
+    'Quanto mais tarde um bug é encontrado, <b>mais caro</b> fica corrigi-lo.',
+    'Pensa como o usuário mais distraído do mundo — e como o mais malicioso.'
+  ],
+  skills:['Casos de teste','Automação','Atenção aos detalhes','Métricas de qualidade','Pensamento crítico'],
+  dia:'Planejar e executar testes, automatizar cenários repetitivos, registrar bugs com clareza e acompanhar as correções.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> Um profissional de Qualidade de Software pode encontrar um erro antes mesmo de o sistema chegar ao usuário final! Ele realiza testes para identificar falhas, verificar funcionalidades, avaliar o desempenho e garantir que o software funcione conforme o esperado. Uma curiosidade é que testar um sistema não significa apenas verificar se ele funciona, mas também tentar descobrir todas as maneiras pelas quais ele pode falhar!</p>", licao:""},
+    {ano:"1996", titulo:"Um erro de software já provocou a perda de um foguete espacial!", texto:"<p>Em 1996, o foguete europeu Ariane 5, durante seu primeiro lançamento, explodiu aproximadamente 37 segundos após a decolagem. A investigação identificou que a falha foi causada por um erro de software: um valor numérico muito grande foi convertido incorretamente, provocando o desligamento dos sistemas de orientação.</p><p>O prejuízo foi estimado em aproximadamente US$ 370 milhões.</p>", licao:"<b>O que isso nos ensina?</b> Qualidade de Software não é apenas verificar se um programa funciona. É testar situações inesperadas, identificar vulnerabilidades, validar cálculos e garantir que o sistema seja confiável. Em determinadas situações, um único erro de programação pode causar prejuízos milionários ou colocar vidas em risco!"}
+  ]
+},
+{
+  id:'seg', nome:'Segurança da Informação', tag:'Cibersegurança', icone:'🛡️', cor:'#ff4060',
+  frase:'Protege sistemas e dados contra invasões, vazamentos e golpes.',
+  look:{skin:'#c68642', hair:'#1a1a1a', estilo:'short', camisa:'#37474f', acc:['hood','shades','shield']},
+  fatos:[
+    'Existem <b>hackers éticos</b> (pentesters), pagos para invadir sistemas com autorização e achar falhas antes dos criminosos.',
+    'Programas de <b>bug bounty</b> pagam recompensas a quem encontra e reporta vulnerabilidades.',
+    'No Brasil, a <b>LGPD</b> (Lei Geral de Proteção de Dados) obriga empresas a proteger os dados pessoais das pessoas.',
+    'Muitos ataques começam com <b>engenharia social</b>: enganar uma pessoa é mais fácil do que quebrar uma criptografia.'
+  ],
+  skills:['Redes','Linux','Criptografia','Pentest','Análise de riscos','LGPD'],
+  dia:'Monitorar alertas, investigar incidentes, testar defesas, orientar colegas e garantir que sistemas estejam atualizados.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Segurança da Informação atua como um verdadeiro guardião do mundo digital! Ele trabalha para proteger dados, sistemas e redes contra ataques de hackers, fraudes e vazamentos de informações. Uma curiosidade é que muitos profissionais dessa área realizam testes simulando ataques cibernéticos, conhecidos como testes de invasão (Pentest), para descobrir vulnerabilidades antes que criminosos possam explorá-las.</p><p>Os ataques cibernéticos estão se tornando cada vez mais sofisticados e podem atingir desde computadores pessoais até grandes empresas, bancos, hospitais e órgãos governamentais em qualquer parte do mundo!</p>", licao:""},
+    {ano:"2026", titulo:"", texto:"<p>Um fato impressionante aconteceu em novembro de 2026: a França acusou um grupo ligado ao Irã de realizar um ataque cibernético que alterou remotamente a temperatura de refrigeradores de aproximadamente 700 supermercados franceses, causando perdas de alimentos e prejuízos milionários.</p><p>Outro caso recente envolveu a empresa de transporte marítimo Maersk, que, em novembro de 2026, informou estar investigando um acesso não autorizado a um de seus sistemas, com extração de dados.</p><p><small style=\"color:var(--muted)\">Reuters</small></p><p>Esses acontecimentos mostram que a Segurança da Informação vai muito além de proteger senhas: o profissional dessa área precisa antecipar ameaças, identificar vulnerabilidades, proteger dados e impedir que ataques digitais provoquem prejuízos financeiros e até impactos na vida das pessoas.</p>", licao:"<b>A grande reflexão:</b> no mundo conectado, um ataque cibernético pode começar com um simples clique e terminar afetando milhares de pessoas. Por isso, profissionais de Segurança da Informação são cada vez mais essenciais!"}
+  ]
+},
+{
+  id:'infra', nome:'Infraestrutura & Redes', tag:'Infra', icone:'🌐', cor:'#22d3ee',
+  frase:'Mantém de pé servidores, redes e data centers — o “chão” onde tudo roda.',
+  look:{skin:'#e0ac69', hair:'#6b4226', estilo:'short', camisa:'#00acc1', acc:['hardhat','beard']},
+  fatos:[
+    'Cuida de servidores, cabos, Wi-Fi, roteadores e <b>data centers</b>.',
+    'Quando a internet da escola cai, é o pessoal de infra que descobre o porquê.',
+    'Trabalha com protocolos como <b>TCP/IP, DNS e BGP</b> — as “regras de trânsito” da internet.',
+    'Muitos sistemas precisam funcionar <b>24 horas por dia</b>, então existem plantões e monitoramento constante.'
+  ],
+  skills:['Redes TCP/IP','Linux','Windows Server','Virtualização','Cabeamento','Monitoramento'],
+  dia:'Configurar equipamentos, monitorar a rede, resolver quedas, planejar capacidade e manter tudo documentado.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Infraestrutura e Redes é responsável por manter o mundo digital conectado! Ele planeja, configura e administra redes, servidores, computadores e serviços que permitem a comunicação entre dispositivos. Uma curiosidade é que, quando você assiste a um vídeo, acessa um site ou envia uma mensagem, existe uma complexa infraestrutura de redes trabalhando nos bastidores para que tudo aconteça em segundos!</p>", licao:""},
+    {ano:"📰", titulo:"A internet depende de cabos submarinos que atravessam os oceanos! 🌐", texto:"<p>Muitas pessoas imaginam que a internet funciona principalmente por satélites, mas a realidade é surpreendente: aproximadamente 99% do tráfego internacional de dados é transportado por cabos de fibra óptica instalados no fundo dos oceanos. Esses cabos conectam continentes e permitem que mensagens, vídeos, transações bancárias e informações circulem pelo mundo em frações de segundo.</p><p>O mais impressionante é que esses cabos podem percorrer milhares de quilômetros e precisam de equipes especializadas para instalação, monitoramento e manutenção.</p>", licao:"<b>O que isso nos ensina?</b> A infraestrutura de redes é a espinha dorsal do mundo conectado. Sem servidores, roteadores, fibra óptica e profissionais especializados, serviços como WhatsApp, YouTube, bancos digitais e plataformas de ensino simplesmente não funcionariam como conhecemos!"}
+  ]
+},
+{
+  id:'devops', nome:'DevOps & Cloud', tag:'DevOps', icone:'☁️', cor:'#4d8dff',
+  frase:'Automatiza o caminho do código até os servidores na nuvem.',
+  look:{skin:'#f1c27d', hair:'#e65100', estilo:'bun', camisa:'#2979ff', acc:['headset','cloud']},
+  fatos:[
+    'Automatiza testes, build e implantação do código (<b>CI/CD</b>).',
+    'Cuida de servidores na nuvem (<b>AWS, Azure, Google Cloud</b>), muitas vezes descritos como código.',
+    'Usa contêineres (<b>Docker</b>) e orquestradores (<b>Kubernetes</b>) para rodar sistemas em grande escala.',
+    'Graças à automação, grandes empresas fazem <b>centenas de deploys por dia</b>.'
+  ],
+  skills:['Docker','Kubernetes','Linux','CI/CD','Cloud','Scripts'],
+  dia:'Criar pipelines de deploy, monitorar aplicações, escalar servidores e reduzir o trabalho manual repetitivo.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de DevOps &amp; Cloud ajuda a colocar sistemas e aplicações no ar de forma rápida, segura e automatizada! Ele integra atividades de desenvolvimento de software e infraestrutura, utilizando serviços de computação em nuvem, como AWS, Microsoft Azure e Google Cloud. Uma curiosidade é que, graças à automação e à computação em nuvem, algumas empresas conseguem atualizar seus sistemas várias vezes ao dia, sem precisar interromper os serviços para os usuários!</p>", licao:""}
+  ]
+},
+{
+  id:'dados', nome:'Ciência de Dados', tag:'Dados', icone:'📊', cor:'#ffd23f',
+  frase:'Transforma montanhas de dados em respostas e decisões.',
+  look:{skin:'#8d5524', hair:'#2b1b17', estilo:'long', camisa:'#ffb300', acc:['glasses','chart']},
+  fatos:[
+    'Responde perguntas com dados: o que vende mais, quando o ônibus atrasa, qual doença está crescendo.',
+    'Usa <b>estatística</b> e programação (<b>Python, R, SQL</b>) — e muitos gráficos.',
+    'Uma parte enorme do trabalho é <b>limpar e organizar</b> dados bagunçados.',
+    'Precisa saber <b>contar uma história</b> com números para quem toma as decisões.'
+  ],
+  skills:['Python','SQL','Estatística','Visualização','Power BI','Pensamento crítico'],
+  dia:'Coletar e limpar dados, criar análises e painéis, testar hipóteses e apresentar resultados.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Ciência de Dados consegue transformar milhões de dados aparentemente sem importância em informações valiosas para as empresas! Ele utiliza programação, estatística, matemática e inteligência artificial para identificar padrões, prever tendências e apoiar decisões estratégicas. Uma curiosidade é que os algoritmos de recomendação de plataformas como Netflix, YouTube e Spotify utilizam técnicas de Ciência de Dados para sugerir filmes, vídeos e músicas de acordo com os interesses de cada usuário!</p>", licao:""}
+  ]
+},
+{
+  id:'ia', nome:'Inteligência Artificial', tag:'IA / ML', icone:'🤖', cor:'#e040fb',
+  frase:'Cria sistemas que aprendem com exemplos em vez de seguir só regras fixas.',
+  look:{skin:'#e0ac69', hair:'#0d0d0d', estilo:'spiky', camisa:'#aa00ff', acc:['robot']},
+  fatos:[
+    'Está por trás de assistentes de voz, recomendações de vídeos, chatbots e carros autônomos.',
+    'Treina modelos de <b>Machine Learning</b> com muitos exemplos, em vez de programar cada regra na mão.',
+    'Usa bastante <b>matemática</b> (estatística, álgebra linear) e programação, principalmente em Python.',
+    'Uma das áreas que mais crescem — e que mais levanta <b>debates éticos</b>.'
+  ],
+  skills:['Python','Matemática','Machine Learning','Dados','Ética'],
+  dia:'Preparar dados, treinar e avaliar modelos, medir vieses e colocar a IA para funcionar dentro de produtos reais.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Inteligência Artificial trabalha no desenvolvimento de sistemas capazes de aprender com dados, reconhecer padrões, interpretar informações e até gerar textos, imagens e músicas! Uma curiosidade é que algumas IAs conseguem identificar doenças em exames médicos, traduzir idiomas em tempo real e auxiliar na descoberta de novos medicamentos. Isso significa que a Inteligência Artificial não está apenas transformando a tecnologia, mas também revolucionando áreas como saúde, educação, indústria e comunicação!</p>", licao:""},
+    {ano:"2017", titulo:"A Inteligência Artificial já protagonizou situações que parecem saídas de um filme de ficção científica!", texto:"<p>Em 2017, pesquisadores do Facebook desenvolveram dois sistemas de Inteligência Artificial chamados Bob e Alice, programados para negociar objetos virtuais entre si, como livros, bolas e chapéus.</p><p>Durante o experimento, os dois sistemas começaram a modificar a maneira de se comunicar, criando padrões de palavras e repetições que os seres humanos não conseguiam compreender facilmente.</p><p>A história ficou famosa porque os pesquisadores interromperam aquele formato de treinamento e ajustaram os sistemas para que utilizassem o inglês compreensível. Mas atenção: eles não foram desligados por medo de uma revolta das máquinas, como muitas notícias divulgaram na época.</p>", licao:""},
+    {ano:"📰", titulo:"E existem outros fatos impressionantes sobre Inteligência Artificial:", texto:"<p><b>1. A IA que derrotou um campeão mundial</b><br>Em 2016, o AlphaGo, desenvolvido pela DeepMind, derrotou Lee Sedol, um dos maiores jogadores de Go do mundo. O jogo possui tantas possibilidades de movimentos que era considerado um enorme desafio para os computadores.</p><p><b>2. A IA que ajuda a ciência a descobrir proteínas</b><br>O AlphaFold, do Google DeepMind, consegue prever estruturas tridimensionais de proteínas, contribuindo para pesquisas científicas e estudos relacionados ao desenvolvimento de medicamentos.</p><p><b>3. A IA que auxilia médicos</b><br>Sistemas de inteligência artificial conseguem analisar imagens médicas, identificar padrões e auxiliar profissionais de saúde na identificação de possíveis doenças.</p><p><b>4. A IA que cria conteúdo</b><br>Atualmente, ferramentas de IA conseguem produzir textos, imagens, vídeos, músicas e até códigos de programação a partir de instruções escritas pelos usuários.</p>", licao:"<b>Uma reflexão para o futuro profissional:</b> a Inteligência Artificial não é mais uma tecnologia distante. Ela já está transformando profissões, empresas, pesquisas científicas e a maneira como vivemos. O grande desafio será desenvolver sistemas cada vez mais inteligentes, seguros, éticos e responsáveis."}
+  ]
+},
+{
+  id:'ux', nome:'UX/UI Design', tag:'Design', icone:'🎨', cor:'#ff4f9a',
+  frase:'Faz a tecnologia ser fácil, bonita e acessível para qualquer pessoa.',
+  look:{skin:'#ffdbac', hair:'#8e24aa', estilo:'bob', camisa:'#f50057', acc:['beret','palette']},
+  fatos:[
+    '<b>UX</b> (experiência do usuário) estuda como as pessoas usam um produto; <b>UI</b> (interface) cuida do visual: cores, botões, telas.',
+    'Faz pesquisas e testes com <b>usuários reais</b> antes e depois de criar uma tela.',
+    'Usa ferramentas como o <b>Figma</b> para desenhar protótipos clicáveis.',
+    'Pensa em <b>acessibilidade</b>: o app precisa funcionar para quem enxerga pouco, é daltônico ou usa leitor de tela.'
+  ],
+  skills:['Figma','Pesquisa com usuários','Prototipação','Acessibilidade','Empatia'],
+  dia:'Entrevistar usuários, desenhar fluxos e telas, testar protótipos e trabalhar junto com o time de desenvolvimento.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de UX/UI Design é responsável por criar experiências digitais que sejam bonitas, intuitivas e fáceis de usar! Enquanto o UX Designer (User Experience) se preocupa com a experiência e a satisfação do usuário, o UI Designer (User Interface) trabalha com a aparência visual das telas, cores, botões e elementos gráficos. Uma curiosidade é que, muitas vezes, um bom trabalho de UX Design faz com que o usuário consiga utilizar um aplicativo ou site sem precisar de instruções ou ajuda. Afinal, quando a tecnologia é bem projetada, tudo parece simples!</p>", licao:""}
+  ]
+},
+{
+  id:'dba', nome:'Banco de Dados (DBA)', tag:'DBA', icone:'🗄️', cor:'#1de9b6',
+  frase:'Guarda, organiza e protege os dados — o bem mais valioso de uma empresa.',
+  look:{skin:'#c68642', hair:'#a0a0a0', estilo:'bald', camisa:'#00897b', acc:['glasses','beard','db']},
+  fatos:[
+    'Cuida dos bancos de dados onde ficam contas, notas, compras, mensagens...',
+    'Garante que os dados <b>não se percam</b>, estejam seguros e que as consultas sejam rápidas.',
+    'Faz e <b>testa backups</b> — um backup que nunca foi testado talvez não funcione.',
+    'Domina <b>SQL</b> e bancos como PostgreSQL, MySQL, Oracle e MongoDB.'
+  ],
+  skills:['SQL','Modelagem de dados','Backup e recuperação','Performance','Segurança'],
+  dia:'Otimizar consultas lentas, criar e ajustar tabelas, controlar acessos e garantir backups e recuperação.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional DBA (Database Administrator), ou Administrador de Banco de Dados, é responsável por proteger, organizar e garantir que as informações de uma empresa estejam sempre disponíveis e acessíveis. Uma curiosidade é que, mesmo quando milhares de pessoas acessam um aplicativo ou site ao mesmo tempo, o DBA trabalha nos bastidores para garantir que os dados sejam armazenados, consultados e atualizados com segurança e rapidez. Afinal, por trás de quase toda aplicação digital existe um banco de dados que precisa funcionar perfeitamente!</p>", licao:""},
+    {ano:"📰", titulo:"No mundo digital, praticamente tudo pode se transformar em dados, até mesmo uma conversa perto do celular! 📱", texto:"<p>Quando você utiliza um aplicativo, faz uma pesquisa na internet, realiza uma compra ou interage nas redes sociais, essas atividades podem gerar dados que são coletados e analisados por diferentes sistemas.</p><p>E tem mais: você já conversou sobre determinado produto perto do celular e, pouco tempo depois, começou a receber anúncios sobre ele? Isso pode acontecer por diversos motivos, como pesquisas anteriores, localização, histórico de navegação, aplicativos utilizados e compartilhamento de dados entre serviços.</p><p>Embora exista a preocupação de que o celular esteja sempre ouvindo as conversas, a exibição de anúncios relacionados a um assunto não comprova, por si só, que o microfone foi utilizado para captá-las.</p>", licao:"<b>O que isso nos ensina?</b> Dados são um dos recursos mais valiosos da atualidade. Eles permitem que empresas conheçam comportamentos, identifiquem tendências, personalizem serviços e tomem decisões. Por isso, bancos de dados, privacidade e proteção das informações são fundamentais na sociedade digital!"}
+  ]
+},
+{
+  id:'games', nome:'Desenvolvimento de Games', tag:'Games', icone:'🎮', cor:'#b4ff39',
+  frase:'Une programação, arte, música e roteiro para criar mundos interativos.',
+  look:{skin:'#ffdbac', hair:'#039be5', estilo:'short', camisa:'#64dd17', acc:['vr','controller']},
+  fatos:[
+    'É uma das áreas mais <b>multidisciplinares</b> da TI: programação, arte, som, roteiro e design de fases.',
+    'Usa motores (<b>engines</b>) como Unity, Unreal e Godot.',
+    '<b>Matemática e física</b> aparecem o tempo todo: colisões, gravidade, câmeras e iluminação.',
+    'Segundo várias estimativas de mercado, a indústria de games fatura mais que cinema e música juntos.'
+  ],
+  skills:['C# / C++','Unity / Unreal','Matemática','Criatividade','Trabalho em equipe'],
+  dia:'Programar mecânicas, integrar arte e som, testar a jogabilidade e ajustar o equilíbrio do jogo.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Desenvolvimento de Games não trabalha apenas criando jogos divertidos, mas também desenvolve sistemas complexos que envolvem programação, inteligência artificial, física, matemática, animação e design. Uma curiosidade é que, em um jogo de mundo aberto, como Minecraft ou GTA, o desenvolvedor precisa programar regras para que personagens, objetos, clima e cenários reajam às ações dos jogadores em tempo real. Ou seja, por trás de cada jogo existe muita tecnologia e milhares de linhas de código!</p>", licao:""},
+    {ano:"2009", titulo:"", texto:"<p><b>Você sabia?</b> O jogo Minecraft, criado originalmente pelo desenvolvedor sueco Markus Persson (Notch), começou a ser desenvolvido em 2009 por apenas uma pessoa! O projeto cresceu tanto que se tornou um dos jogos mais vendidos da história, ultrapassando 300 milhões de cópias comercializadas em 2023. Esse é um exemplo real de como uma ideia, aliada à programação e à criatividade, pode se transformar em um fenômeno mundial!</p>", licao:""}
+  ]
+},
+{
+  id:'gestao', nome:'Gestão de Projetos & Agilidade', tag:'Gestão', icone:'📋', cor:'#8c9eff',
+  frase:'Organiza pessoas, prazos e prioridades para o projeto sair do papel.',
+  look:{skin:'#8d5524', hair:'#1a1a1a', estilo:'bun', camisa:'#3d5afe', acc:['tie','clipboard']},
+  fatos:[
+    'Planeja prazos, custos, riscos e prioridades — e conversa com <b>todo mundo</b>.',
+    'Em times ágeis, o <b>Scrum Master</b> ajuda o time a trabalhar melhor e o <b>Product Owner</b> decide o que é mais importante.',
+    'Usa quadros <b>Kanban</b>, reuniões diárias curtas (dailies) e entregas frequentes.',
+    'Habilidades com pessoas contam tanto quanto as técnicas.'
+  ],
+  skills:['Comunicação','Liderança','Scrum','Kanban','Negociação'],
+  dia:'Conduzir reuniões, acompanhar o andamento, remover obstáculos do time e alinhar expectativas com os clientes.',
+  noticias:[
+    {ano:"💡", titulo:"", texto:"<p><b>Você sabia?</b> O profissional de Gestão de Projetos &amp; Agilidade é responsável por planejar, organizar e acompanhar projetos para garantir que sejam entregues dentro do prazo, do orçamento e com a qualidade esperada. Uma curiosidade é que, em equipes que utilizam metodologias ágeis, como Scrum, o trabalho é dividido em ciclos curtos chamados Sprints, permitindo entregar pequenas partes do projeto, receber feedback dos usuários e realizar melhorias continuamente. Afinal, um grande projeto não precisa ser concluído de uma só vez: ele pode evoluir passo a passo!</p>", licao:""}
+  ]
+}
+];
+
+/* =========================================================
+   GERADOR DE PERSONAGENS (SVG)
+   ========================================================= */
+function shade(hex, amt){
+  let n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);
+}
+function avatar(L, uid){
+  const s=L.skin, h=L.hair, c=L.camisa, a=new Set(L.acc), hd=shade(h,-25);
+  let back='', front='', body='', top='', face='', held='';
+
+  // cabelo de trás
+  if(L.estilo==='long') back+=`<path d="M30 60 Q28 26 60 26 Q92 26 90 60 L94 108 Q82 100 78 72 L42 72 Q38 100 26 108Z" fill="${h}"/>`;
+  if(L.estilo==='bun')  back+=`<circle cx="60" cy="24" r="12" fill="${h}"/>`;
+  if(L.estilo==='ponytail') back+=`<path d="M84 46 Q104 56 98 92 Q94 102 88 96 Q94 74 80 58Z" fill="${h}"/>`;
+  if(L.estilo==='bob') back+=`<path d="M28 62 Q26 26 60 26 Q94 26 92 62 L92 86 Q84 90 80 80 L40 80 Q36 90 28 86Z" fill="${h}"/>`;
+  if(a.has('hood')) back+=`<path d="M22 84 Q16 22 60 20 Q104 22 98 84 Q92 104 60 106 Q28 104 22 84Z" fill="${shade(c,-18)}"/>`;
+
+  // corpo
+  body+=`<path d="M20 160 Q20 110 60 106 Q100 110 100 160Z" fill="${c}"/>`;
+  body+=`<path d="M48 106 L60 120 L72 106" fill="none" stroke="${shade(c,-40)}" stroke-width="3" stroke-linejoin="round"/>`;
+  if(a.has('tie')) body+=`<path d="M56 112 L64 112 L66 120 L62 146 L58 146 L54 120Z" fill="#ffd54f" stroke="#c49000" stroke-width="1.5"/>`;
+  if(a.has('shield')) body+=`<path d="M78 124 L90 128 L90 138 Q90 148 78 152 Q66 148 66 138 L66 128Z" fill="#ff1744" stroke="#fff" stroke-width="2"/><path d="M73 138 L77 142 L84 133" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  if(a.has('chart')) body+=`<rect x="70" y="128" width="22" height="22" rx="4" fill="#fff"/><rect x="73" y="140" width="4" height="7" fill="#7c4dff"/><rect x="79" y="135" width="4" height="12" fill="#ff4081"/><rect x="85" y="131" width="4" height="16" fill="#00b8d4"/>`;
+  if(a.has('db')) body+=`<g transform="translate(70 126)"><ellipse cx="10" cy="4" rx="10" ry="4" fill="#fff"/><path d="M0 4 V20 Q10 26 20 20 V4" fill="#e0f2f1" stroke="#fff"/><path d="M0 12 Q10 17 20 12" stroke="#00897b" fill="none" stroke-width="1.5"/></g>`;
+  if(a.has('cloud')) body+=`<path d="M70 146 Q64 146 64 140 Q64 134 70 134 Q72 126 80 127 Q88 126 89 134 Q95 134 95 140 Q95 146 89 146Z" fill="#fff"/>`;
+
+  // pescoço, orelhas, cabeça
+  face+=`<rect x="52" y="86" width="16" height="22" rx="6" fill="${shade(s,-18)}"/>`;
+  face+=`<circle cx="32" cy="64" r="6" fill="${shade(s,-10)}"/><circle cx="88" cy="64" r="6" fill="${shade(s,-10)}"/>`;
+  face+=`<circle cx="60" cy="62" r="28" fill="${s}"/>`;
+  if(a.has('beard')) face+=`<path d="M34 64 Q36 94 60 96 Q84 94 86 64 Q80 82 60 82 Q40 82 34 64Z" fill="${h}"/>`;
+  face+=`<ellipse cx="44" cy="74" rx="5" ry="3" fill="#ff6b8b" opacity=".45"/><ellipse cx="76" cy="74" rx="5" ry="3" fill="#ff6b8b" opacity=".45"/>`;
+  if(!a.has('vr')) face+=`<g class="eyes"><circle cx="50" cy="63" r="3.6" fill="#1d1d2b"/><circle cx="70" cy="63" r="3.6" fill="#1d1d2b"/><circle cx="51.2" cy="61.8" r="1.1" fill="#fff"/><circle cx="71.2" cy="61.8" r="1.1" fill="#fff"/></g>`;
+  face+=`<path d="M50 75 Q60 84 70 75" stroke="${a.has('beard')?'#fff':'#1d1d2b'}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  face+=`<path d="M44 55 Q50 52 55 55 M65 55 Q70 52 76 55" stroke="${hd}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+
+  // cabelo da frente
+  const H = {
+    short:`<path d="M32 60 Q30 30 60 30 Q90 30 88 60 Q84 46 72 42 Q60 48 46 42 Q36 48 32 60Z" fill="${h}"/>`,
+    side:`<path d="M31 62 Q28 28 62 29 Q92 31 89 58 Q80 42 60 44 Q46 46 38 50 Q34 54 31 62Z" fill="${h}"/>`,
+    spiky:`<path d="M32 60 L33 38 L41 43 L44 26 L53 38 L60 20 L67 38 L76 26 L79 43 L87 38 L88 60 Q76 46 60 46 Q44 46 32 60Z" fill="${h}"/>`,
+    curly:[[34,52],[38,40],[47,32],[58,28],[69,30],[79,35],[85,46],[87,57],[33,62]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="11" fill="${h}"/>`).join(''),
+    long:`<path d="M32 62 Q30 30 60 30 Q90 30 88 62 Q80 42 58 42 Q42 44 32 62Z" fill="${h}"/>`,
+    bun:`<path d="M32 60 Q30 32 60 32 Q90 32 88 60 Q82 44 60 43 Q38 44 32 60Z" fill="${h}"/>`,
+    ponytail:`<path d="M32 60 Q30 30 60 30 Q90 30 88 60 Q78 40 60 42 Q42 44 32 60Z" fill="${h}"/>`,
+    bob:`<path d="M30 64 Q28 30 60 30 Q92 30 90 64 Q86 46 70 42 L50 42 Q34 46 30 64Z" fill="${h}"/>`,
+    bald:`<path d="M31 66 Q31 54 36 50 L38 62Z M89 66 Q89 54 84 50 L82 62Z" fill="${h}"/><ellipse cx="52" cy="42" rx="8" ry="4" fill="#fff" opacity=".25"/>`
+  };
+  if(!a.has('hood') || true) top+=H[L.estilo]||'';
+
+  // chapéus e acessórios de cabeça
+  if(a.has('hardhat')) top+=`<path d="M30 54 Q30 24 60 24 Q90 24 90 54Z" fill="#ffca28"/><rect x="24" y="50" width="72" height="8" rx="4" fill="#ffb300"/><rect x="56" y="24" width="8" height="28" rx="3" fill="#ffe082"/>`;
+  if(a.has('beret')) top+=`<ellipse cx="56" cy="34" rx="30" ry="11" fill="#212121" transform="rotate(-10 56 34)"/><circle cx="54" cy="22" r="3" fill="#212121"/>`;
+  if(a.has('glasses')) top+=`<g fill="#ffffff30" stroke="#1d1d2b" stroke-width="2.6"><circle cx="50" cy="63" r="8.5"/><circle cx="70" cy="63" r="8.5"/></g><path d="M58.5 63 H61.5 M41.5 62 L34 60 M78.5 62 L86 60" stroke="#1d1d2b" stroke-width="2.6"/>`;
+  if(a.has('shades')) top+=`<path d="M38 57 H82 V63 Q82 71 72 71 Q64 71 62 63 H58 Q56 71 48 71 Q38 71 38 63Z" fill="#111"/><path d="M42 60 L48 60" stroke="#ff1744" stroke-width="2" stroke-linecap="round"/>`;
+  if(a.has('vr')) top+=`<rect x="32" y="52" width="56" height="22" rx="10" fill="#263238"/><rect x="36" y="56" width="48" height="14" rx="7" fill="url(#vr${uid})"/><path d="M32 62 H28 M88 62 H92" stroke="#263238" stroke-width="5"/><defs><linearGradient id="vr${uid}" x1="0" x2="1"><stop offset="0" stop-color="#00e5ff"/><stop offset="1" stop-color="#d500f9"/></linearGradient></defs>`;
+  if(a.has('headset')) top+=`<path d="M30 62 Q28 26 60 26 Q92 26 90 62" stroke="#263238" stroke-width="5" fill="none"/><rect x="24" y="56" width="11" height="18" rx="5" fill="#263238"/><rect x="85" y="56" width="11" height="18" rx="5" fill="#263238"/><path d="M30 72 Q34 84 48 80" stroke="#263238" stroke-width="3" fill="none"/><circle cx="49" cy="80" r="3" fill="#ff5252"/>`;
+
+  // objetos nas mãos
+  const hands=(y=134)=>`<circle cx="34" cy="${y}" r="7" fill="${s}"/><circle cx="86" cy="${y}" r="7" fill="${s}"/>`;
+  if(a.has('laptop')) held+=`<rect x="28" y="124" width="64" height="34" rx="5" fill="#cfd8dc"/><rect x="32" y="127" width="56" height="27" rx="3" fill="#263238"/><text x="60" y="145" font-size="12" text-anchor="middle" fill="#7cf7ff" font-family="monospace" font-weight="700">&lt;/&gt;</text>`+hands(152);
+  if(a.has('magnifier')) held+=`<circle cx="95" cy="122" r="11" fill="#b3e5fc88" stroke="#37474f" stroke-width="4"/><path d="M88 131 L80 142" stroke="#5d4037" stroke-width="6" stroke-linecap="round"/><circle cx="80" cy="142" r="7" fill="${s}"/>`;
+  if(a.has('postit')) held+=`<rect x="80" y="118" width="22" height="22" fill="#fff176" transform="rotate(8 91 129)"/><path d="M84 126 H98 M84 131 H95" stroke="#9e9d24" stroke-width="1.6" transform="rotate(8 91 129)"/><circle cx="86" cy="140" r="7" fill="${s}"/>`;
+  if(a.has('clipboard')) held+=`<rect x="26" y="118" width="26" height="34" rx="3" fill="#8d6e63"/><rect x="29" y="123" width="20" height="26" fill="#fff"/><rect x="34" y="116" width="10" height="6" rx="2" fill="#bdbdbd"/><path d="M32 130 L35 133 L40 127 M32 140 L35 143 L40 137" stroke="#00c853" stroke-width="2" fill="none"/><circle cx="46" cy="148" r="7" fill="${s}"/>`;
+  if(a.has('palette')) held+=`<path d="M24 136 Q22 118 42 118 Q58 118 56 132 Q55 138 48 136 Q42 135 44 142 Q46 150 36 150 Q26 150 24 136Z" fill="#ffecb3"/><circle cx="34" cy="128" r="3.5" fill="#f50057"/><circle cx="44" cy="125" r="3.5" fill="#2979ff"/><circle cx="50" cy="131" r="3.5" fill="#00c853"/><circle cx="31" cy="139" r="3.5" fill="#ffd600"/><circle cx="40" cy="150" r="7" fill="${s}"/>`;
+  if(a.has('controller')) held+=`<path d="M36 132 Q36 124 46 124 H74 Q84 124 84 132 L88 146 Q90 154 82 152 L74 144 H46 L38 152 Q30 154 32 146Z" fill="#37474f"/><path d="M46 132 V140 M42 136 H50" stroke="#fff" stroke-width="2.5"/><circle cx="72" cy="133" r="2.5" fill="#ff5252"/><circle cx="78" cy="138" r="2.5" fill="#69f0ae"/>`+hands(146);
+  if(a.has('robot')) held+=`<g transform="translate(84 104)"><path d="M14 0 V-6" stroke="#90a4ae" stroke-width="2"/><circle cx="14" cy="-7" r="3" fill="#ff4081"/><rect x="2" y="0" width="24" height="18" rx="6" fill="#cfd8dc" stroke="#78909c" stroke-width="1.5"/><circle cx="9" cy="9" r="3" fill="#00e5ff"/><circle cx="19" cy="9" r="3" fill="#00e5ff"/><rect x="6" y="20" width="16" height="12" rx="4" fill="#b0bec5"/></g><circle cx="86" cy="138" r="7" fill="${s}"/>`;
+
+  return `<svg class="av" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${back}${body}${face}${top}${held}</svg>`;
+}
+
+/* =========================================================
+   ESTADO E INTERFACE
+   ========================================================= */
+const visited = new Set();     // só em memória: cada visitante começa do zero
+let current = 0, celebrated = false;
+const $ = s => document.querySelector(s);
+
+function buildStage(){
+  const stage=$('#stage'), track=$('#track');
+  PROFS.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='char'; b.style.setProperty('--c',p.cor); b.style.setProperty('--d',(i*-0.37)+'s');
+    b.style.animationDelay=(i*0.06)+'s'; b.dataset.i=i;
+    b.setAttribute('aria-label','Conhecer: '+p.nome);
+    b.innerHTML=`<span class="done">✓</span><div class="plat"></div>${avatar(p.look,i)}
+      <div class="name">${p.nome}</div><span class="tag">${p.icone} ${p.tag}</span>`;
+    b.addEventListener('click',()=>openProf(i));
+    stage.appendChild(b);
+
+    const st=document.createElement('div'); st.className='step'; st.title=p.nome; st.textContent=p.icone; st.id='step-'+p.id;
+    track.appendChild(st);
+  });
+}
+
+function updateHUD(){
+  const n=visited.size, total=PROFS.length, pct=Math.round(n/total*100);
+  const C=194.8; $('#ringBar').style.strokeDashoffset = C - C*n/total;
+  animateNumber($('#pct'), pct);
+  $('#hudCount').textContent = `${n} de ${total} profissões`;
+  const msgs=[[0,'Trilha percorrida'],[1,'Começou bem! 👟'],[25,'Aquecendo os motores 🔥'],[50,'Metade do caminho! ⚡'],[75,'Quase lá! 🚀'],[100,'Trilha completa! 🏆']];
+  $('#hudMsg').textContent = msgs.filter(m=>pct>=m[0]).pop()[1];
+  PROFS.forEach(p=>$('#step-'+p.id).classList.toggle('on',visited.has(p.id)));
+  document.querySelectorAll('.char').forEach(el=>el.classList.toggle('visited',visited.has(PROFS[el.dataset.i].id)));
+}
+function animateNumber(el,to){
+  const from=parseInt(el.textContent)||0, t0=performance.now(), dur=700;
+  (function step(t){ const k=Math.min(1,(t-t0)/dur); el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-k,3)))+'%'; if(k<1) requestAnimationFrame(step); })(t0);
+}
+
+function openProf(i){
+  current=i; const p=PROFS[i];
+  const isNew=!visited.has(p.id);
+  visited.add(p.id);
+  const ov=$('#overlay'), m=$('#modal');
+  m.style.setProperty('--c',p.cor);
+  $('#mAvatar').innerHTML=avatar(p.look,'m'+i);
+  $('#mTitle').textContent=p.icone+' '+p.nome;
+  $('#mPhrase').textContent=p.frase;
+
+  $('#p-sobre').innerHTML=`
+    <div class="facts">${p.fatos.map((f,k)=>`<div class="fact" style="animation-delay:${k*.08}s"><b>#${k+1}</b>${f}</div>`).join('')}</div>
+    <h3 class="sec-title">🛠️ Habilidades e ferramentas</h3>
+    <div class="chips">${p.skills.map(s=>`<span class="chip">${s}</span>`).join('')}</div>
+    <h3 class="sec-title">📅 Um dia de trabalho</h3>
+    <div class="day">${p.dia}</div>`;
+  $('#p-news').innerHTML=`<div class="news">${p.noticias.map((n,k)=>`
+    <article class="card" style="animation-delay:${k*.1}s">
+      <div class="year">${n.ano}</div>
+      <div>${n.titulo?`<h3>${n.titulo}</h3>`:''}${n.texto}${n.licao?`<div class="lesson">${n.licao}</div>`:''}</div>
+    </article>`).join('')}</div>`;
+
+  selectTab('sobre');
+  $('#prev').style.visibility = i===0?'hidden':'visible';
+  $('#next').textContent = i===PROFS.length-1 ? 'Concluir ✓' : 'Próxima profissão →';
+  ov.classList.add('open'); m.scrollTop=0;
+  $('#close').focus();
+  updateHUD();
+  if(isNew && visited.size<PROFS.length) toast(`+1 profissão! ${Math.round(visited.size/PROFS.length*100)}% da trilha`);
+}
+function closeProf(){
+  $('#overlay').classList.remove('open');
+  const btn=document.querySelector(`.char[data-i="${current}"]`); if(btn) btn.focus();
+  if(visited.size===PROFS.length && !celebrated){ celebrated=true; setTimeout(celebrate,250); }
+}
+function selectTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  $('#p-sobre').classList.toggle('show',t==='sobre');
+  $('#p-news').classList.toggle('show',t==='news');
+}
+
+let toastTimer;
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ---------- confete ---------- */
+function celebrate(){
+  $('#win').classList.add('open');
+  const cv=$('#confetti'), ctx=cv.getContext('2d');
+  cv.width=innerWidth; cv.height=innerHeight;
+  const cols=['#ffd54f','#ff4f9a','#7cf7ff','#b388ff','#69f0ae','#ff8a3d'];
+  const parts=Array.from({length:220},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.6,w:6+Math.random()*7,h:8+Math.random()*10,
+    vx:-2+Math.random()*4,vy:2+Math.random()*4,r:Math.random()*6,vr:-.2+Math.random()*.4,c:cols[Math.floor(Math.random()*cols.length)]}));
+  const t0=performance.now();
+  (function frame(t){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.03;p.r+=p.vr;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+    if(t-t0<5000) requestAnimationFrame(frame); else ctx.clearRect(0,0,cv.width,cv.height);
+  })(t0);
+}
+
+/* ---------- símbolos flutuando no fundo ---------- */
+function buildGlyphs(){
+  const g=$('#glyphs'), sym=['</>','{ }','01','#','$_','=>','( )','[ ]','&&','//','<?>','10','sudo','git','SQL','AI','404','200 OK'];
+  const cols=['#ffd54f','#ff6fb5','#7cf7ff','#b388ff','#69f0ae'];
+  for(let i=0;i<26;i++){
+    const s=document.createElement('span'); s.className='glyph';
+    s.textContent=sym[i%sym.length];
+    s.style.left=Math.random()*100+'%';
+    s.style.fontSize=(14+Math.random()*26)+'px';
+    s.style.color=cols[i%cols.length];
+    s.style.animationDuration=(14+Math.random()*16)+'s';
+    s.style.animationDelay=(-Math.random()*30)+'s';
+    g.appendChild(s);
+  }
+}
+
+/* ---------- eventos ---------- */
+$('#close').onclick=closeProf;
+$('#overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeProf(); });
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>selectTab(b.dataset.tab));
+$('#next').onclick=()=>{ if(current<PROFS.length-1) openProf(current+1); else closeProf(); };
+$('#prev').onclick=()=>{ if(current>0) openProf(current-1); };
+$('#winClose').onclick=()=>$('#win').classList.remove('open');
+$('#reset').onclick=()=>{ visited.clear(); celebrated=false; updateHUD(); toast('Trilha zerada! Pronta para o próximo visitante 👋'); window.scrollTo({top:0,behavior:'smooth'}); };
+document.addEventListener('keydown',e=>{
+  if(!$('#overlay').classList.contains('open')) { if(e.key==='Escape') $('#win').classList.remove('open'); return; }
+  if(e.key==='Escape') closeProf();
+  if(e.key==='ArrowRight') $('#next').click();
+  if(e.key==='ArrowLeft' && current>0) $('#prev').click();
+});
+addEventListener('resize',()=>{const cv=$('#confetti'); cv.width=innerWidth; cv.height=innerHeight;});
+
+buildGlyphs(); buildStage(); updateHUD();
+</script>
+</body>
+</html>
